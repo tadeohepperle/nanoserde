@@ -1088,6 +1088,7 @@ fn tuple_struct2() {
     #[derive(DeJson, SerJson, PartialEq)]
     pub struct Test(i32, pub i32, pub(crate) String, f32);
 
+    #[allow(unused)]
     #[derive(DeJson, SerJson, PartialEq)]
     pub struct Vec2(pub(crate) f32, pub(crate) f32);
 

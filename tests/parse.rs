@@ -6,6 +6,7 @@ use nanoserde::{DeBin, DeJson, DeRon, SerBin, SerJson, SerRon};
 fn test_trailing_comma() {
     #[rustfmt::skip]
     #[derive(Debug, DeBin, SerBin, DeJson, SerJson, DeRon, SerRon)]
+    #[allow(unused)]
     enum TestEnum {
         A
     }
@@ -16,5 +17,6 @@ fn test_trailing_comma() {
 fn test_empty_brackets() {
     #[rustfmt::skip]
     #[derive(SerJson, DeJson, SerBin, DeBin, SerRon, DeRon)]
+    #[allow(unused)]
     enum Message { Goodbye, Greeting{} }
 }

@@ -193,6 +193,7 @@ fn tuple_struct() {
     pub struct Test(i32, pub i32, pub(crate) String, f32, [u64; 100]);
 
     #[derive(DeBin, SerBin, PartialEq)]
+    #[allow(unused)]
     pub struct Vec2(pub(crate) f32, pub(crate) f32);
 
     let test = Test(0, 1, "asd".to_string(), 2., [3_u64; 100]);
@@ -245,6 +246,7 @@ fn enums() {
 #[test]
 fn pub_tuple_struct() {
     #[derive(DeBin, SerBin, PartialEq)]
+    #[allow(unused)]
     struct Foo(pub [u8; 3]);
 }
 

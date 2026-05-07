@@ -574,6 +574,7 @@ fn tuple_struct() {
     pub struct Test(i32, pub i32, pub(crate) String, f32);
 
     #[derive(DeRon, SerRon, PartialEq)]
+    #[allow(unused)]
     pub struct Vec2(pub(crate) f32, pub(crate) f32);
 
     let test = Test(0, 1, "asd".to_string(), 2.);
