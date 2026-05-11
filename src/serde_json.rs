@@ -62,7 +62,7 @@ pub trait SerJson {
     /// ```rust
     /// # use nanoserde::*;
     /// let mut s = SerJsonState::new(String::new());
-    /// 42u32.ser_json(0, &mut s);
+    /// 42u32.ser_json(&mut s);
     /// assert_eq!(s.out, "42");
     /// ```
     fn ser_json(&self, s: &mut SerJsonState);
