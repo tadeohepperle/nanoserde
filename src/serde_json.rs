@@ -1,5 +1,7 @@
 use core::str::Chars;
 use core::{error::Error, fmt::Write, time::Duration};
+use std::rc::Rc;
+use std::sync::Arc;
 
 use alloc::boxed::Box;
 use alloc::collections::{BTreeMap, BTreeSet, LinkedList};
@@ -826,7 +828,7 @@ impl DeJson for bool {
 }
 
 macro_rules! impl_ser_json_string {
-    ($ty: ident) => {
+    ($ty: ty) => {
         impl SerJson for $ty {
             fn ser_json(&self, s: &mut SerJsonState) {
                 s.out.push('"');
@@ -853,12 +855,40 @@ macro_rules! impl_ser_json_string {
 
 impl_ser_json_string!(String);
 impl_ser_json_string!(str);
+impl_ser_json_string!(Arc<str>);
+impl_ser_json_string!(Rc<str>);
 
 impl DeJson for String {
     fn de_json(s: &mut DeJsonState, i: &mut Chars) -> Result<String, DeJsonErr> {
         let val = s.as_string()?;
         s.next_tok(i)?;
         Ok(val)
+    }
+}
+
+impl DeJson for Arc<str> {
+    fn de_json(s: &mut DeJsonState, i: &mut Chars) -> Result<Arc<str>, DeJsonErr> {
+        if let DeJsonTok::Str = &mut s.tok {
+            let current_s: &str = &s.strbuf;
+            let val = Arc::<str>::from(current_s);
+            s.next_tok(i)?;
+            return Ok(val);
+        } else {
+            return Err(s.err_token("string"));
+        }
+    }
+}
+
+impl DeJson for Rc<str> {
+    fn de_json(s: &mut DeJsonState, i: &mut Chars) -> Result<Rc<str>, DeJsonErr> {
+        if let DeJsonTok::Str = &mut s.tok {
+            let current_s: &str = &s.strbuf;
+            let val = Rc::<str>::from(current_s);
+            s.next_tok(i)?;
+            return Ok(val);
+        } else {
+            return Err(s.err_token("string"));
+        }
     }
 }
 
