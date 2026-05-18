@@ -59,13 +59,6 @@ pub fn attrs_default_with(attributes: &[crate::parse::Attribute]) -> Option<Stri
     })
 }
 
-#[cfg(feature = "json")]
-pub fn attrs_transparent(attributes: &[crate::parse::Attribute]) -> bool {
-    attributes
-        .iter()
-        .any(|attr| attr.tokens.len() == 1 && attr.tokens[0] == "transparent")
-}
-
 #[cfg(any(feature = "json", feature = "ron", feature = "binary"))]
 pub fn attrs_skip(attributes: &[crate::parse::Attribute]) -> bool {
     attributes

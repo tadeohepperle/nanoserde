@@ -556,16 +556,13 @@ pub fn derive_ser_json_struct_unnamed(struct_: &Struct, crate_name: &str) -> Tok
     let (generic_w_bounds, generic_no_bounds) =
         struct_bounds_strings(struct_, "SerJson", crate_name);
 
-    let transparent = shared::attrs_transparent(&struct_.attributes);
-
     // encode empty struct as {}
     if struct_.fields.is_empty() {
         l!(body, "s.out.push('{');");
         l!(body, "s.out.push('}');");
     }
-    // if its a newtype struct and it should be transparent - skip any curles
-    // and skip "container"
-    else if transparent && struct_.fields.len() == 1 {
+    // if its a newtype struct serialize as the inner value
+    else if struct_.fields.len() == 1 {
         l!(body, "self.{}.ser_json(s);", 0);
     }
     // if more than one field - encode as array []
@@ -607,8 +604,6 @@ pub fn derive_de_json_struct_unnamed(struct_: &Struct, crate_name: &str) -> Toke
     let (generic_w_bounds, generic_no_bounds) =
         struct_bounds_strings(struct_, "DeJson", crate_name);
 
-    let transparent = shared::attrs_transparent(&struct_.attributes);
-
     for _ in &struct_.fields {
         l!(body, "{{ let r = {}::DeJson::de_json(s, i)?;", crate_name);
         if struct_.fields.len() != 1 {
@@ -624,7 +619,7 @@ pub fn derive_de_json_struct_unnamed(struct_: &Struct, crate_name: &str) -> Toke
     }
     // if it was transparent newtype struct - skip "container"
     // and just deserialize content
-    else if transparent && struct_.fields.len() == 1 {
+    else if struct_.fields.len() == 1 {
         format!("let r = Self({});", body)
     }
     // more than one field, was an array []

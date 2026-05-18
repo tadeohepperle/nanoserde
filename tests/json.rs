@@ -1055,27 +1055,6 @@ fn tuple_struct() {
     let test = Foo { x: Test(5) };
     let bytes = SerJson::serialize_json(&test);
 
-    assert_eq!(bytes, "{\"x\":[5]}");
-
-    let test_deserialized = DeJson::deserialize_json(&bytes).unwrap();
-
-    assert!(test == test_deserialized);
-}
-
-#[test]
-fn tuple_struct_transparent() {
-    #[derive(DeJson, SerJson, PartialEq)]
-    #[nserde(transparent)]
-    pub struct Test(i32);
-
-    #[derive(DeJson, SerJson, PartialEq)]
-    pub struct Foo {
-        x: Test,
-    }
-
-    let test = Foo { x: Test(5) };
-    let bytes = SerJson::serialize_json(&test);
-
     assert_eq!(bytes, "{\"x\":5}");
 
     let test_deserialized = DeJson::deserialize_json(&bytes).unwrap();
