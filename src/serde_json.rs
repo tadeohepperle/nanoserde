@@ -866,31 +866,25 @@ impl DeJson for String {
     }
 }
 
-impl DeJson for Arc<str> {
-    fn de_json(s: &mut DeJsonState, i: &mut Chars) -> Result<Arc<str>, DeJsonErr> {
-        if let DeJsonTok::Str = &mut s.tok {
-            let current_s: &str = &s.strbuf;
-            let val = Arc::<str>::from(current_s);
-            s.next_tok(i)?;
-            return Ok(val);
-        } else {
-            return Err(s.err_token("string"));
+macro_rules! impl_de_json_from_str {
+    ($ty: ty) => {
+        impl DeJson for $ty {
+            fn de_json(s: &mut DeJsonState, i: &mut Chars) -> Result<$ty, DeJsonErr> {
+                if let DeJsonTok::Str = &mut s.tok {
+                    let current_s: &str = &s.strbuf;
+                    let val: $ty = current_s.into();
+                    s.strbuf.clear();
+                    s.next_tok(i)?;
+                    return Ok(val);
+                } else {
+                    return Err(s.err_token("string"));
+                }
+            }
         }
-    }
+    };
 }
-
-impl DeJson for Rc<str> {
-    fn de_json(s: &mut DeJsonState, i: &mut Chars) -> Result<Rc<str>, DeJsonErr> {
-        if let DeJsonTok::Str = &mut s.tok {
-            let current_s: &str = &s.strbuf;
-            let val = Rc::<str>::from(current_s);
-            s.next_tok(i)?;
-            return Ok(val);
-        } else {
-            return Err(s.err_token("string"));
-        }
-    }
-}
+impl_de_json_from_str!(Rc<str>);
+impl_de_json_from_str!(Arc<str>);
 
 impl<T> SerJson for Vec<T>
 where
