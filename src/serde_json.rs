@@ -827,6 +827,30 @@ impl DeJson for bool {
     }
 }
 
+impl<T: SerJson> SerJson for Arc<T> {
+    fn ser_json(&self, s: &mut SerJsonState) {
+        T::ser_json(&self, s);
+    }
+}
+
+impl<T: DeJson> DeJson for Arc<T> {
+    fn de_json(state: &mut DeJsonState, input: &mut Chars) -> Result<Self, DeJsonErr> {
+        Ok(Arc::new(T::de_json(state, input)?))
+    }
+}
+
+impl<T: SerJson> SerJson for Rc<T> {
+    fn ser_json(&self, s: &mut SerJsonState) {
+        T::ser_json(&self, s);
+    }
+}
+
+impl<T: DeJson> DeJson for Rc<T> {
+    fn de_json(state: &mut DeJsonState, input: &mut Chars) -> Result<Self, DeJsonErr> {
+        Ok(Rc::new(T::de_json(state, input)?))
+    }
+}
+
 macro_rules! impl_ser_json_string {
     ($ty: ty) => {
         impl SerJson for $ty {
